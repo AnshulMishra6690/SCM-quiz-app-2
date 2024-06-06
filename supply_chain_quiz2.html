@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supply Chain Management Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .section label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .section input[type="text"], .section input[type="number"], .section select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        .section input[type="radio"] {
+            margin-right: 10px;
+        }
+        .submit-btn {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Supply Chain Management Quiz</h1>
+        
+        <!-- User Information Section -->
+        <div class="section">
+            <h2>User Information</h2>
+            <label for="userName">Name:</label>
+            <input type="text" id="userName" required>
+
+            <label for="signum">Signum No:</label>
+            <input type="number" id="signum" required>
+        </div>
+        
+        <!-- Quiz Form -->
+        <form id="quizForm" class="section">
+            <!-- Questions will be dynamically generated here -->
+        </form>
+
+        <!-- Submit Button -->
+        <button type="button" class="submit-btn" id="submitButton" onclick="submitForm()">Submit</button>
+        
+        <!-- Results Section -->
+        <div class="results" id="results" style="display: none;">
+            <h2>Submitted Answers</h2>
+            <p id="userInfo"></p>
+            <table id="resultsTable" border="1" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th>Question Number</th>
+                        <th>Question</th>
+                        <th>Selected Answer</th>
+                        <th>Correct Answer</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <p id="score"></p>
+            <p id="percentage"></p>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                number: 1,
+                question: "Which of the following best describes supply chain management?",
+                options: ["A. Managing the production process within a factory", "B. Coordinating the flow of goods, information, and finances from suppliers to end consumers", "C. Supervising the sales team to increase revenue", "D. Overseeing the human resources department"],
+                correctAnswer: "B. Coordinating the flow of goods, information, and finances from suppliers to end consumers"
+            },
+            {
+                number: 2,
+                question: "What is the primary goal of supply chain management?",
+                options: ["A. To increase product prices", "B. To maximize efficiency and reduce costs throughout the supply chain", "C. To enhance the marketing strategy", "D. To hire more employees"],
+                correctAnswer: "B. To maximize efficiency and reduce costs throughout the supply chain"
+            },
+            {
+                number: 3,
+                question: "Which of the following is an example of a key supply chain process?",
+                options: ["A. Branding", "B. Procurement", "C. Advertising", "D. Product Design"],
+                correctAnswer: "B. Procurement"
+            },
+            {
+                number: 4,
+                question: "Which technology is commonly used in supply chain management to track inventory and shipments?",
+                options: ["A. Virtual Reality", "B. Blockchain", "C. Augmented Reality", "D. RFID"],
+                correctAnswer: "D. RFID"
+            },
+            {
+                number: 5,
+                question: "What does the term 'just-in-time' (JIT) inventory refer to?",
+                options: ["A. Holding large inventories to avoid stockouts", "B. Reducing inventory to minimal levels and receiving goods only as they are needed in the production process", "C. Ordering inventory once a month", "D. Storing extra inventory for future use"],
+                correctAnswer: "B. Reducing inventory to minimal levels and receiving goods only as they are needed in the production process"
+            },
+            {
+                number: 6,
+                question: "Which of the following is a common challenge in supply chain management?",
+                options: ["A. Excessive marketing budgets", "B. Accurate demand forecasting", "C. High employee turnover", "D. Poor product design"],
+                correctAnswer: "B. Accurate demand forecasting"
+            },
+            {
+                number: 7,
+                question: "What is 'bullwhip effect' in supply chain management?",
+                options: ["A. Increased efficiency due to large inventories", "B. The amplification of demand fluctuations as they move up the supply chain", "C. Rapid technological advancements in supply chain processes", "D. Improved customer satisfaction due to faster delivery"],
+                correctAnswer: "B. The amplification of demand fluctuations as they move up the supply chain"
+            },
+            {
+                number: 8,
+                question: "Which strategy can help mitigate the bullwhip effect?",
+                options: ["A. Increasing promotional activities", "B. Enhancing communication and information sharing among supply chain partners", "C. Hiring more supply chain managers", "D. Reducing product prices"],
+                correctAnswer: "B. Enhancing communication and information sharing among supply chain partners"
+            },
+            {
+                number: 9,
+                question: "What role does logistics play in supply chain management?",
+                options: ["A. Designing new products", "B. Managing the flow and storage of goods from point of origin to point of consumption", "C. Creating marketing campaigns", "D. Handling employee payroll"],
+                correctAnswer: "B. Managing the flow and storage of goods from point of origin to point of consumption"
+            },
+            {
+                number: 10,
+                question: "Which of the following is a benefit of effective supply chain management?",
+                options: ["A. Increased product complexity", "B. Higher operational costs", "C. Enhanced customer satisfaction and loyalty", "D. Slower time-to-market"],
+                correctAnswer: "C. Enhanced customer satisfaction and loyalty"
+            }
+        ];
+
+        function loadQuestions() {
+            const form = document.getElementById('quizForm');
+            questions.forEach(q => {
+                const questionBlock = document.createElement('div');
+                questionBlock.className = 'section';
+
+                const questionLabel = document.createElement('label');
+                questionLabel.textContent = q.question;
+                questionBlock.appendChild(questionLabel);
+
+                q.options.forEach(option => {
+                    const optionLabel = document.createElement('label');
+                    const optionInput = document.createElement('input');
+                    optionInput.type = 'radio';
+                    optionInput.name = `question${q.number}`;
+                    optionInput.value = option;
+                    optionInput.required = true;
+
+                    optionLabel.appendChild(optionInput);
+                    optionLabel.appendChild(document.createTextNode(option));
+                    questionBlock.appendChild(optionLabel);
+                    questionBlock.appendChild(document.createElement('br'));
+                });
+
+                form.appendChild(questionBlock);
+            });
+        }
+
+        function submitForm() {
+            const userName = document.getElementById('userName').value;
+            const signum = document.getElementById('signum').value;
+            const resultsDiv = document.getElementById('results');
+            const resultsTableBody = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
+            resultsTableBody.innerHTML = ''; // Clear previous results
+
+            if (userName && signum) {
+                document.getElementById('userInfo').textContent = `Name: ${userName}, Signum No: ${signum}`;
+                
+                let correctAnswersCount = 0;
+
+                questions.forEach(q => {
+                    const selectedOption = document.querySelector(`input[name="question${q.number}"]:checked`).value;
+                    const row = resultsTableBody.insertRow();
+                    row.insertCell(0).textContent = q.number;
+                    row.insertCell(1).textContent = q.question;
+                    row.insertCell(2).textContent = selectedOption;
+                    row.insertCell(3).textContent = q.correctAnswer;
+                    const resultCell = row.insertCell(4);
+                    if (selectedOption === q.correctAnswer) {
+                        resultCell.textContent = 'Correct';
+                        correctAnswersCount++;
+                    } else {
+                        resultCell.textContent = 'Incorrect';
+                    }
+                });
+
+                const totalQuestions = questions.length;
+                const percentage = (correctAnswersCount / totalQuestions) * 100;
+
+                document.getElementById('score').textContent = `Correct Answers: ${correctAnswersCount} out of ${totalQuestions}`;
+                document.getElementById('percentage').textContent = `Percentage: ${percentage.toFixed(2)}%`;
+
+                resultsDiv.style.display = 'block';
+                document.getElementById('submitButton').disabled = true;
+            } else {
+                alert('Please fill in your name and Signum number.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadQuestions);
+    </script>
+</body>
+</html>
